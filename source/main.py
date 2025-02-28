@@ -160,6 +160,54 @@ def print_board(board):
     for row in board:
         print(" ".join(row))
 
+def main():
+    rows = int(input("Введите количество строк: "))
+    cols = int(input("Введите количество столбцов: "))
+    board, rows, cols = generate_minesweeper_board(rows, cols)
+    print_board(board)
+    
+    start_row = int(input("Введите начальную строку: "))
+    start_col = int(input("Введите начальный столбец: "))
+    open_cells(board, rows, cols, start_row, start_col)
+    board_with_mines = place_mines(board, rows, cols)
+    board_with_counts = count_adjacent_mines(board_with_mines, rows, cols)
+    board_with_opened_neighbors = open_empty_neighbors(board_with_counts, rows, cols)
+    board_with_hidden_mines = hide_mines(board_with_opened_neighbors, rows, cols)
+    print("Поле с скрытыми минами:")
+    print_board(board_with_hidden_mines)
+    
+    while True:
+        row = int(input("Введите строку: "))
+        col = int(input("Введите столбец: "))
+        
+        if board_with_mines[row][col] == "*":
+            print("Вы проиграли!")
+            print("Поле с минами:")
+            print_board(board_with_opened_neighbors)
+            break
+        
+        if board_with_opened_neighbors[row][col] == "■":
+            board_with_opened_neighbors[row][col] = " "
+            print_board(board_with_opened_neighbors)
+        
+        board_with_counts = count_adjacent_mines(board_with_opened_neighbors, rows, cols)
+        print_board(board_with_counts)
+        board_with_opened_neighbors = open_empty_neighbors(board_with_counts, rows, cols)
+        print_board(board_with_opened_neighbors)
+        
+        if no_closed_cells(board_with_opened_neighbors, rows, cols):
+            print("Вы выиграли!")
+            print("Поле с минами:")
+            print_board(board_with_opened_neighbors)
+            break
+        
+        board_with_hidden_mines = hide_mines(board_with_opened_neighbors, rows, cols)
+        print("Поле с скрытыми минами:")
+        print_board(board_with_hidden_mines)
+
+if __name__ == "__main__":
+    main()
+"""
 # Пример работы
 board, rows, cols = generate_minesweeper_board(10, 10)
 print_board(board)
@@ -185,3 +233,4 @@ else:
 board_with_hidden_mines = hide_mines(count_adjacent_mines(board_with_opened_neighbors, rows, cols), rows, cols)  # Скрытие мин
 print("Поле с скрытыми минами:")
 print_board(board_with_hidden_mines)
+"""

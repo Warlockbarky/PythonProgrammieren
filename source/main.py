@@ -70,7 +70,7 @@ def place_mines(board, rows, cols):
 
 def count_adjacent_mines(board, rows, cols):
     """
-    Создает копию доски и обновляет её, заполняя каждую открытую клетку количеством мин, граничащих с ней.
+    Создает копию доски и обновляет её, заполняя каждую изначально открытую клетку количеством мин, граничащих с ней.
     :param board: Игровое поле с минами
     :param rows: Количество строк
     :param cols: Количество столбцов
@@ -81,7 +81,7 @@ def count_adjacent_mines(board, rows, cols):
     
     for r in range(1, rows + 1):
         for c in range(1, cols + 1):
-            if board_with_counts[r][c] == " ":
+            if board[r][c] == " ":
                 mine_count = 0
                 for dr, dc in directions:
                     nr, nc = r + dr, c + dc
@@ -91,19 +91,73 @@ def count_adjacent_mines(board, rows, cols):
     
     return board_with_counts
 
+def open_empty_neighbors(board, rows, cols):
+    """
+    Создает копию поля с подсчитанными минами и открывает все закрытые соседние поля для пустых клеток на оригинальном поле.
+    :param board: Игровое поле с подсчитанными минами
+    :param rows: Количество строк
+    :param cols: Количество столбцов
+    :return: Копия обновленной доски
+    """
+    board_copy = copy.deepcopy(board)
+    directions = [(-1, 0), (1, 0), (0, -1), (0, 1), (-1, -1), (-1, 1), (1, -1), (1, 1)]
+    
+    def is_empty(r, c):
+        return board[r][c] == " "
+    
+    def open_neighbors(r, c):
+        for dr, dc in directions:
+            nr, nc = r + dr, c + dc
+            if 1 <= nr <= rows and 1 <= nc <= cols and board_copy[nr][nc] == "■":
+                board_copy[nr][nc] = " "  # Открываем закрытую клетку
+    
+    for r in range(1, rows + 1):
+        for c in range(1, cols + 1):
+            if is_empty(r, c):
+                open_neighbors(r, c)
+    
+    return board_copy
+
+
+def hide_mines(board, rows, cols):
+    """
+    Заменяет мины на закрытые клетки в полученной таблице.
+    :param board: Игровое поле с подсчитанными минами
+    :param rows: Количество строк
+    :param cols: Количество столбцов
+    :return: Обновленная доска
+    """
+    board_with_hidden_mines = copy.deepcopy(board)
+    
+    for r in range(1, rows + 1):
+        for c in range(1, cols + 1):
+            if board_with_hidden_mines[r][c] == "*":
+                board_with_hidden_mines[r][c] = "■"  # Заменяем мину на закрытую клетку
+    
+    return board_with_hidden_mines
+
 # Тестирование функции
 def print_board(board):
     for row in board:
         print(" ".join(row))
 
 # Пример работы
-board, rows, cols = generate_minesweeper_board(5, 5)
+board, rows, cols = generate_minesweeper_board(10, 10)
 open_cells(board, rows, cols, 3, 3)  # Открытие клетки (3,3) и распространение
-board_with_mines = place_mines(board, rows, cols)  # Создание копии доски с минами
-board_with_counts = count_adjacent_mines(board_with_mines, rows, cols)
 print("Исходное поле:")
 print_board(board)
+board_with_mines = place_mines(board, rows, cols)  # Создание копии доски с минами
 print("Поле с минами:")
 print_board(board_with_mines)
+board_with_counts = count_adjacent_mines(board_with_mines, rows, cols)
 print("Поле с подсчетом мин:")
 print_board(board_with_counts)
+board_with_opened_neighbors = open_empty_neighbors(board_with_counts, rows, cols)  # Открытие соседних клеток
+print("Поле с открытыми соседними клетками:")
+print_board(board_with_opened_neighbors)
+board_with_counts = count_adjacent_mines(board_with_opened_neighbors, rows, cols)
+print("Поле с подсчетом мин:")
+print_board(board_with_counts)
+board_with_hidden_mines = hide_mines(count_adjacent_mines(board_with_opened_neighbors, rows, cols), rows, cols)  # Скрытие мин
+print("Поле с скрытыми минами:")
+print_board(board_with_hidden_mines)

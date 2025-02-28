@@ -6,3 +6,6 @@ from .open_empty_neighbors import open_empty_neighbors
 from .no_closed_cells import no_closed_cells
 from .hide_mines import hide_mines
 from .print_board import print_board
+from .display_menu import display_menu
+from .choose_difficulty import choose_difficulty
+from .profile_user_management import *

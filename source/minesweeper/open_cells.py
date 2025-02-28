@@ -1,9 +1,9 @@
 import random
 
 
-def open_cells(board, rows, cols, start_row: int, start_col: int):
+def open_cells(board, rows, cols, start_row: int, start_col: int, difficulty: int):
     total_cells = rows * cols
-    target_open_cells = total_cells * 30 // 100
+    target_open_cells = total_cells * difficulty // 100
     opened = set()
     queue = [(start_row, start_col)]
 

@@ -1,236 +1,109 @@
-import random
-import copy
+import time
+import minesweeper
+from minesweeper import current_user
 
-def generate_minesweeper_board(rows: int, cols: int):
-    """
-    Генерирует пустое игровое поле для Сапёра заданного размера с номерами строк и столбцов (начиная с 1).
-    :param rows: Количество строк
-    :param cols: Количество столбцов
-    :return: Двумерный список (игровое поле)
-    """
-    board = [["■" for _ in range(cols)] for _ in range(rows)]
-    
-    # Добавление номеров строк (нумерация с 1)
-    board_with_labels = [[str(i)] + row for i, row in enumerate(board, start=1)]
-    
-    # Создание заголовков столбцов (нумерация с 1)
-    header = [" "] + [str(i) for i in range(1, cols + 1)]
-    
-    return [header] + board_with_labels, rows, cols
 
-def open_cells(board, rows, cols, start_row: int, start_col: int):
-    """
-    Открывает клетку и распространяет открытие на соседние клетки, пока не достигнем 30% открытых клеток.
-    :param board: Игровое поле
-    :param rows: Количество строк
-    :param cols: Количество столбцов
-    :param start_row: Начальная строка (1-индексация)
-    :param start_col: Начальный столбец (1-индексация)
-    """
-    total_cells = rows * cols
-    target_open_cells = total_cells * 30 // 100  # 30% от всех клеток, округляя вниз
-    opened = set()
-    queue = [(start_row, start_col)]  # Остается в 1-индексации
-    
-    while queue and len(opened) < target_open_cells:
-        r, c = queue.pop(0)  # Используем pop(0) для извлечения первого элемента
-        if (r, c) in opened or r == 0 or c == 0:  # Пропускаем заголовки
-            continue
-        
-        board[r][c] = " "  # Открытая клетка
-        opened.add((r, c))
-        
-        # Проверяем соседей (вверх, вниз, влево, вправо)
-        neighbors = [(r-1, c), (r+1, c), (r, c-1), (r, c+1)]
-        random.shuffle(neighbors)  # Перемешиваем для равномерного распределения
-        
-        for nr, nc in neighbors:
-            if 0 < nr <= rows and 0 < nc <= cols and (nr, nc) not in opened:
-                queue.append((nr, nc))
+def start_game():
+    global current_user
+    if current_user is None:
+        username = minesweeper.manage_profiles()
+        if not username:
+            return
+    else:
+        username = current_user
 
-def place_mines(board, rows, cols):
-    """
-    Создает копию доски и расставляет мины на закрытых клетках (■), не превышая 1/6 от общего числа клеток.
-    :param board: Игровое поле
-    :param rows: Количество строк
-    :param cols: Количество столбцов
-    :return: Копия доски с минами
-    """
-    board_with_mines = copy.deepcopy(board)
-    total_cells = rows * cols
-    max_mines = total_cells // 6  # 1/6 от всех клеток
-    closed_cells = [(r, c) for r in range(1, rows + 1) for c in range(1, cols + 1) if board_with_mines[r][c] == "■"]
-    
-    mine_positions = random.sample(closed_cells, min(len(closed_cells), max_mines))
-    
-    for r, c in mine_positions:
-        board_with_mines[r][c] = "*"  # Обозначение мины
-    
-    return board_with_mines
+    difficulty, amount_of_mines = minesweeper.choose_difficulty()
+    if difficulty is None:
+        return
 
-def count_adjacent_mines(board, rows, cols):
-    """
-    Создает копию доски и обновляет её, заполняя каждую изначально открытую клетку количеством мин, граничащих с ней.
-    :param board: Игровое поле с минами
-    :param rows: Количество строк
-    :param cols: Количество столбцов
-    :return: Копия обновленной доски
-    """
-    board_with_counts = copy.deepcopy(board)
-    directions = [(-1, -1), (-1, 0), (-1, 1), (0, -1), (0, 1), (1, -1), (1, 0), (1, 1)]
-    
-    for r in range(1, rows + 1):
-        for c in range(1, cols + 1):
-            if board[r][c] == " ":
-                mine_count = 0
-                for dr, dc in directions:
-                    nr, nc = r + dr, c + dc
-                    if 1 <= nr <= rows and 1 <= nc <= cols and board_with_counts[nr][nc] == "*":
-                        mine_count += 1
-                board_with_counts[r][c] = str(mine_count) if mine_count > 0 else " "
-    
-    return board_with_counts
+    rows = input("Введите количество строк (или 'quit' для выхода в меню): ")
+    if rows.lower() == 'quit':
+        return
+    rows = int(rows)
 
-def open_empty_neighbors(board, rows, cols):
-    """
-    Создает копию поля с подсчитанными минами и открывает все закрытые соседние поля для пустых клеток на оригинальном поле.
-    :param board: Игровое поле с подсчитанными минами
-    :param rows: Количество строк
-    :param cols: Количество столбцов
-    :return: Копия обновленной доски
-    """
-    directions = [(-1, 0), (1, 0), (0, -1), (0, 1), (-1, -1), (-1, 1), (1, -1), (1, 1)]
-    
-    def is_empty(r, c):
-        return board[r][c] == " "
-    
-    def open_neighbors(board_copy, r, c):
-        for dr, dc in directions:
-            nr, nc = r + dr, c + dc
-            if 1 <= nr <= rows and 1 <= nc <= cols and board_copy[nr][nc] == "■":
-                board_copy[nr][nc] = " "  # Открываем закрытую клетку
-    
-    while True:
-        board_copy = copy.deepcopy(board)
-        for r in range(1, rows + 1):
-            for c in range(1, cols + 1):
-                if is_empty(r, c):
-                    open_neighbors(board_copy, r, c)
-        
-        if board_copy == board:
-            break
-        
-        board = count_adjacent_mines(board_copy, rows, cols)
-    
-    return board
+    cols = input("Введите количество столбцов (или 'quit' для выхода в меню): ")
+    if cols.lower() == 'quit':
+        return
+    cols = int(cols)
 
-def no_closed_cells(board, rows, cols):
-    """
-    Проверяет, есть ли на поле хотя бы одна закрытая клетка.
-    :param board: Игровое поле
-    :param rows: Количество строк
-    :param cols: Количество столбцов
-    :return: True, если нет ни одной закрытой клетки, иначе False
-    """
-    for r in range(1, rows + 1):
-        for c in range(1, cols + 1):
-            if board[r][c] == "■":
-                return False
-    return True
+    board, rows, cols = minesweeper.generate_minesweeper_board(rows, cols)
+    minesweeper.print_board(board)
 
-def hide_mines(board, rows, cols):
-    """
-    Заменяет мины на закрытые клетки в полученной таблице.
-    :param board: Игровое поле с подсчитанными минами
-    :param rows: Количество строк
-    :param cols: Количество столбцов
-    :return: Обновленная доска
-    """
-    board_with_hidden_mines = copy.deepcopy(board)
-    
-    for r in range(1, rows + 1):
-        for c in range(1, cols + 1):
-            if board_with_hidden_mines[r][c] == "*":
-                board_with_hidden_mines[r][c] = "■"  # Заменяем мину на закрытую клетку
-    
-    return board_with_hidden_mines
+    start_row = input("Введите начальную строку (или 'quit' для выхода в меню): ")
+    if start_row.lower() == 'quit':
+        return
+    start_row = int(start_row)
 
-# Тестирование функции
-def print_board(board):
-    for row in board:
-        print(" ".join(row))
+    start_col = input("Введите начальный столбец (или 'quit' для выхода в меню): ")
+    if start_col.lower() == 'quit':
+        return
+    start_col = int(start_col)
 
-def main():
-    rows = int(input("Введите количество строк: "))
-    cols = int(input("Введите количество столбцов: "))
-    board, rows, cols = generate_minesweeper_board(rows, cols)
-    print_board(board)
-    
-    start_row = int(input("Введите начальную строку: "))
-    start_col = int(input("Введите начальный столбец: "))
-    open_cells(board, rows, cols, start_row, start_col)
-    board_with_mines = place_mines(board, rows, cols)
-    board_with_counts = count_adjacent_mines(board_with_mines, rows, cols)
-    board_with_opened_neighbors = open_empty_neighbors(board_with_counts, rows, cols)
-    board_with_hidden_mines = hide_mines(board_with_opened_neighbors, rows, cols)
+    # Начало отсчета времени
+    start_time = time.time()
+
+    minesweeper.open_cells(board, rows, cols, start_row, start_col, difficulty)
+    board_with_mines = minesweeper.place_mines(board, rows, cols, amount_of_mines)
+    board_with_counts = minesweeper.count_adjacent_mines(board_with_mines, rows, cols)
+    board_with_opened_neighbors = minesweeper.open_empty_neighbors(board_with_counts, rows, cols)
+    board_with_hidden_mines = minesweeper.hide_mines(board_with_opened_neighbors, rows, cols)
     print("Поле с скрытыми минами:")
-    print_board(board_with_hidden_mines)
-    
+    minesweeper.print_board(board_with_hidden_mines)
+
     while True:
-        row = int(input("Введите строку: "))
-        col = int(input("Введите столбец: "))
-        
+        row = input("Введите строку (или 'quit' для выхода в меню): ")
+        if row.lower() == 'quit':
+            break
+        row = int(row)
+
+        col = input("Введите столбец (или 'quit' для выхода в меню): ")
+        if col.lower() == 'quit':
+            break
+        col = int(col)
+
         if board_with_mines[row][col] == "*":
             print("Вы проиграли!")
             print("Поле с минами:")
-            print_board(board_with_opened_neighbors)
+            minesweeper.print_board(board_with_opened_neighbors)
             break
-        
+
         if board_with_opened_neighbors[row][col] == "■":
             board_with_opened_neighbors[row][col] = " "
-            print_board(board_with_opened_neighbors)
-        
-        board_with_counts = count_adjacent_mines(board_with_opened_neighbors, rows, cols)
-        print_board(board_with_counts)
-        board_with_opened_neighbors = open_empty_neighbors(board_with_counts, rows, cols)
-        print_board(board_with_opened_neighbors)
-        
-        if no_closed_cells(board_with_opened_neighbors, rows, cols):
-            print("Вы выиграли!")
+
+        board_with_counts = minesweeper.count_adjacent_mines(board_with_opened_neighbors, rows, cols)
+        board_with_opened_neighbors = minesweeper.open_empty_neighbors(board_with_counts, rows, cols)
+
+        if minesweeper.no_closed_cells(board_with_opened_neighbors, rows, cols):
+            end_time = time.time()
+            elapsed_time = end_time - start_time
+            print(f"Вы выиграли! Время игры: {elapsed_time:.2f} секунд")
             print("Поле с минами:")
-            print_board(board_with_opened_neighbors)
+            minesweeper.print_board(board_with_opened_neighbors)
+            update_records(username, rows, cols, difficulty, elapsed_time)
             break
-        
-        board_with_hidden_mines = hide_mines(board_with_opened_neighbors, rows, cols)
+
+        board_with_hidden_mines = minesweeper.hide_mines(board_with_opened_neighbors, rows, cols)
         print("Поле с скрытыми минами:")
-        print_board(board_with_hidden_mines)
+        minesweeper.print_board(board_with_hidden_mines)
+
+
+def main():
+    while True:
+        minesweeper.display_menu()
+        choice = input("Выберите действие: ")
+
+        if choice == "1":
+            start_game()
+        elif choice == "2":
+            minesweeper.profile_management()
+        elif choice == "3":
+            minesweeper.display_records()
+        elif choice == "4":
+            print("Выход из игры. До свидания!")
+            break
+        else:
+            print("Неверный выбор. Попробуйте снова.")
+
 
 if __name__ == "__main__":
     main()
-"""
-# Пример работы
-board, rows, cols = generate_minesweeper_board(10, 10)
-print_board(board)
-open_cells(board, rows, cols, 3, 3)  # Открытие клетки (3,3) и распространение
-print("Исходное поле:")
-print_board(board)
-board_with_mines = place_mines(board, rows, cols)  # Создание копии доски с минами
-print("Поле с минами:")
-print_board(board_with_mines)
-board_with_counts = count_adjacent_mines(board_with_mines, rows, cols)
-print("Поле с подсчетом мин:")
-print_board(board_with_counts)
-board_with_opened_neighbors = open_empty_neighbors(board_with_counts, rows, cols)  # Открытие соседних клеток
-print("Поле с открытыми соседними клетками:")
-print_board(board_with_opened_neighbors)
-board_with_counts = count_adjacent_mines(board_with_opened_neighbors, rows, cols)
-print("Поле с подсчетом мин:")
-print_board(board_with_counts)
-if no_closed_cells(board_with_counts, rows, cols):
-    print("На поле нет закрытых клеток.")
-else:
-    print("На поле есть закрытые клетки.")
-board_with_hidden_mines = hide_mines(count_adjacent_mines(board_with_opened_neighbors, rows, cols), rows, cols)  # Скрытие мин
-print("Поле с скрытыми минами:")
-print_board(board_with_hidden_mines)
-"""

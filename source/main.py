@@ -99,25 +99,44 @@ def open_empty_neighbors(board, rows, cols):
     :param cols: Количество столбцов
     :return: Копия обновленной доски
     """
-    board_copy = copy.deepcopy(board)
     directions = [(-1, 0), (1, 0), (0, -1), (0, 1), (-1, -1), (-1, 1), (1, -1), (1, 1)]
     
     def is_empty(r, c):
         return board[r][c] == " "
     
-    def open_neighbors(r, c):
+    def open_neighbors(board_copy, r, c):
         for dr, dc in directions:
             nr, nc = r + dr, c + dc
             if 1 <= nr <= rows and 1 <= nc <= cols and board_copy[nr][nc] == "■":
                 board_copy[nr][nc] = " "  # Открываем закрытую клетку
     
+    while True:
+        board_copy = copy.deepcopy(board)
+        for r in range(1, rows + 1):
+            for c in range(1, cols + 1):
+                if is_empty(r, c):
+                    open_neighbors(board_copy, r, c)
+        
+        if board_copy == board:
+            break
+        
+        board = count_adjacent_mines(board_copy, rows, cols)
+    
+    return board
+
+def no_closed_cells(board, rows, cols):
+    """
+    Проверяет, есть ли на поле хотя бы одна закрытая клетка.
+    :param board: Игровое поле
+    :param rows: Количество строк
+    :param cols: Количество столбцов
+    :return: True, если нет ни одной закрытой клетки, иначе False
+    """
     for r in range(1, rows + 1):
         for c in range(1, cols + 1):
-            if is_empty(r, c):
-                open_neighbors(r, c)
-    
-    return board_copy
-
+            if board[r][c] == "■":
+                return False
+    return True
 
 def hide_mines(board, rows, cols):
     """
@@ -143,6 +162,7 @@ def print_board(board):
 
 # Пример работы
 board, rows, cols = generate_minesweeper_board(10, 10)
+print_board(board)
 open_cells(board, rows, cols, 3, 3)  # Открытие клетки (3,3) и распространение
 print("Исходное поле:")
 print_board(board)
@@ -158,6 +178,10 @@ print_board(board_with_opened_neighbors)
 board_with_counts = count_adjacent_mines(board_with_opened_neighbors, rows, cols)
 print("Поле с подсчетом мин:")
 print_board(board_with_counts)
+if no_closed_cells(board_with_counts, rows, cols):
+    print("На поле нет закрытых клеток.")
+else:
+    print("На поле есть закрытые клетки.")
 board_with_hidden_mines = hide_mines(count_adjacent_mines(board_with_opened_neighbors, rows, cols), rows, cols)  # Скрытие мин
 print("Поле с скрытыми минами:")
 print_board(board_with_hidden_mines)

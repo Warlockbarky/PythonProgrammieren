@@ -17,31 +17,41 @@ def start_game():
         return
 
     clear_console()
-    rows = minesweeper.animated_input("Введите количество строк (или 'quit' для выхода в меню): ")
-    if rows.lower() == 'quit':
-        return
-    rows = int(rows)
+    while True:
+        rows = minesweeper.animated_input("Enter the number of rows (5-99) (or 'quit' to exit to the menu): ")
+        if rows.lower() == 'quit':
+            return
+        rows = int(rows)
+        if 5 <= rows <= 99:
+            break
+        else:
+            minesweeper.animated_text("Invalid number of rows. Please enter a number between 5 and 99.\n")
 
-    cols = minesweeper.animated_input("Введите количество столбцов (или 'quit' для выхода в меню): ")
-    if cols.lower() == 'quit':
-        return
-    cols = int(cols)
+    while True:
+        cols = minesweeper.animated_input("Enter the number of columns (5-9) (or 'quit' to exit to the menu): ")
+        if cols.lower() == 'quit':
+            return
+        cols = int(cols)
+        if 5 <= cols <= 9:
+            break
+        else:
+            minesweeper.animated_text("Invalid number of columns. Please enter a number between 5 and 9.\n")
 
     clear_console()
     board, rows, cols = minesweeper.generate_minesweeper_board(rows, cols)
     minesweeper.print_board(board)
 
-    start_row = minesweeper.animated_input("Введите начальную строку (или 'quit' для выхода в меню): ")
+    start_row = minesweeper.animated_input("Enter the starting row (or 'quit' to exit to the menu): ")
     if start_row.lower() == 'quit':
         return
     start_row = int(start_row)
 
-    start_col = minesweeper.animated_input("Введите начальный столбец (или 'quit' для выхода в меню): ")
+    start_col = minesweeper.animated_input("Enter the starting column (or 'quit' to exit to the menu): ")
     if start_col.lower() == 'quit':
         return
     start_col = int(start_col)
     clear_console()
-    # Начало отсчета времени
+    # Start the timer
     start_time = time.time()
 
     minesweeper.open_cells(board, rows, cols, start_row, start_col, difficulty)
@@ -49,33 +59,33 @@ def start_game():
     board_with_counts = minesweeper.count_adjacent_mines(board_with_mines, rows, cols)
     board_with_opened_neighbors = minesweeper.open_empty_neighbors(board_with_counts, rows, cols)
     board_with_hidden_mines = minesweeper.hide_mines(board_with_opened_neighbors, rows, cols)
-    minesweeper.animated_text("Поле с скрытыми минами:\n")
+    minesweeper.animated_text("Board with hidden mines:\n")
     minesweeper.print_board(board_with_hidden_mines)
 
     while True:
-        row = minesweeper.animated_input("Введите строку (или 'quit' для выхода в меню): ")
+        row = minesweeper.animated_input("Enter the row (or 'quit' to exit to the menu): ")
         if row.lower() == 'quit':
             break
         row = int(row)
 
-        col = minesweeper.animated_input("Введите столбец (или 'quit' для выхода в меню): ")
+        col = minesweeper.animated_input("Enter the column (or 'quit' to exit to the menu): ")
         if col.lower() == 'quit':
             break
         col = int(col)
         clear_console()
 
         if board_with_mines[row][col] == "*":
-            minesweeper.animated_text("Вы проиграли!")
-            minesweeper.animated_text("Поле с минами:\n")
+            minesweeper.animated_text("You lost!")
+            minesweeper.animated_text("Board with mines:\n")
             minesweeper.print_board(board_with_opened_neighbors)
-            choice = minesweeper.animated_input("Чтобы сыграть заново нажмите 1\nЧтобы вернутся в главное меню нажмите 2\nВаш выбор: ")
+            choice = minesweeper.animated_input("To play again press 1\nTo return to the main menu press 2\nYour choice: ")
             if choice == "1":
                 start_game()
                 return
             elif choice == "2":
                 break
             else:
-                minesweeper.animated_text("Неверный выбор. Попробуйте снова.\n")
+                minesweeper.animated_text("Invalid choice. Please try again.\n")
 
         if board_with_opened_neighbors[row][col] == "■":
             board_with_opened_neighbors[row][col] = " "
@@ -86,28 +96,28 @@ def start_game():
         if minesweeper.no_closed_cells(board_with_opened_neighbors, rows, cols):
             end_time = time.time()
             elapsed_time = end_time - start_time
-            minesweeper.animated_text(f"Вы выиграли! Время игры: {elapsed_time:.2f} секунд")
-            minesweeper.animated_text("Поле с минами:\n")
+            minesweeper.animated_text(f"You won! Game time: {elapsed_time:.2f} seconds")
+            minesweeper.animated_text("Board with mines:\n")
             minesweeper.print_board(board_with_opened_neighbors)
             minesweeper.update_records(username, rows, cols, difficulty, elapsed_time)
-            choice = minesweeper.animated_input("Чтобы сыграть заново нажмите 1\nЧтобы вернутся в главное меню нажмите 2\nВаш выбор: ")
+            choice = minesweeper.animated_input("To play again press 1\nTo return to the main menu press 2\nYour choice: ")
             if choice == "1":
                 start_game()
                 return
             elif choice == "2":
                 break
             else:
-                minesweeper.animated_text("Неверный выбор. Попробуйте снова.\n")
+                minesweeper.animated_text("Invalid choice. Please try again.\n")
 
         board_with_hidden_mines = minesweeper.hide_mines(board_with_opened_neighbors, rows, cols)
-        minesweeper.animated_text("Поле с скрытыми минами:\n")
+        minesweeper.animated_text("Board with hidden mines:\n")
         minesweeper.print_board(board_with_hidden_mines)
 
 
 def main():
     while True:
         minesweeper.display_menu()
-        choice = minesweeper.animated_input("Выберите действие: ")
+        choice = minesweeper.animated_input("Choose an action: ")
 
         if choice == "1":
             start_game()
@@ -117,10 +127,10 @@ def main():
             minesweeper.display_records()
         elif choice == "4":
             minesweeper.clear_console()
-            minesweeper.animated_text("Выход из игры. До свидания!")
+            minesweeper.animated_text("Exiting the game. Goodbye!")
             break
         else:
-            minesweeper.animated_text("Неверный выбор. Попробуйте снова.\n")
+            minesweeper.animated_text("Invalid choice. Please try again.\n")
 
 
 if __name__ == "__main__":

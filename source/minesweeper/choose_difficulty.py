@@ -5,14 +5,14 @@ from .clear_console import clear_console
 
 def choose_difficulty():
     clear_console()
-    animated_text("Выберите уровень сложности:")
-    animated_text("1. Легкий")
-    animated_text("2. Средний")
-    animated_text("3. Тяжелый")
-    animated_text("4. Невозможный")
+    animated_text("Choose difficulty level:")
+    animated_text("1. Easy")
+    animated_text("2. Medium")
+    animated_text("3. Hard")
+    animated_text("4. Impossible")
 
     while True:
-        choice = animated_input("Введите номер уровня сложности (или 'quit' для выхода в меню): ")
+        choice = animated_input("Enter the difficulty level number (or 'quit' to exit to the menu): ")
         if choice.lower() == 'quit':
             return None, None
         if choice == "1":
@@ -24,4 +24,4 @@ def choose_difficulty():
         elif choice == "4":
             return 10, 3
         else:
-            animated_text("Неверный выбор. Попробуйте снова.")
+            animated_text("Invalid choice. Please try again.")

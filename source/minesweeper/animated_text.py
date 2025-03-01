@@ -7,4 +7,4 @@ def animated_text(text, delay=0.01):
         sys.stdout.write(char)
         sys.stdout.flush()
         time.sleep(delay)
-    print()  # Перенос строки после завершения анимации
+    print()

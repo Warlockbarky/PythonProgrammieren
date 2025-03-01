@@ -16,7 +16,6 @@ def print_board(board):
     for i, row in enumerate(board):
         colored_row = []
         for j, cell in enumerate(row):
-            # Окрашиваем только те цифры, которые не являются нумерацией строк и столбцов
             if i > 0 and j > 0 and cell in color_map:
                 colored_row.append(color_map[cell] + cell + Style.RESET_ALL)
             else:

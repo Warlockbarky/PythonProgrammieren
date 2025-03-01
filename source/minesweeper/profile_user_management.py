@@ -35,39 +35,39 @@ def save_records(records):
 
 
 def register_profile(profiles):
-    username = animated_input("Введите ник: ")
+    username = animated_input("Enter username: ")
     if username.lower() == 'quit':
         return None
     if username in profiles:
-        animated_text("Профиль с таким ником уже существует.")
+        animated_text("A profile with this username already exists.")
         return None
 
-    password = getpass.getpass("Введите пароль: ")
+    password = getpass.getpass("Enter password: ")
     if password.lower() == 'quit':
         return None
     profiles[username] = password
     save_profiles(profiles)
-    animated_text("Профиль успешно создан.")
+    animated_text("Profile successfully created.")
     return username
 
 
 def login_profile(profiles):
     clear_console()
-    username = animated_input("Введите ник: ")
+    username = animated_input("Enter username: ")
     if username.lower() == 'quit':
         return None
     if username not in profiles:
-        animated_text("Профиль с таким ником не найден.")
+        animated_text("Profile with this username not found.")
         return None
 
-    password = getpass.getpass("Введите пароль: ")
+    password = getpass.getpass("Enter password: ")
     if password.lower() == 'quit':
         return None
     if profiles[username] != password:
-        animated_text("Неверный пароль.")
+        animated_text("Incorrect password.")
         return None
 
-    animated_text("Вы успешно вошли в профиль.")
+    animated_text("Successfully logged in.")
     return username
 
 
@@ -76,7 +76,7 @@ def manage_profiles():
     global current_user
     profiles = load_profiles()
     while True:
-        choice = animated_input("1. Войти в профиль\n2. Создать профиль\n3. Вернуться в меню\nВыберите действие: ")
+        choice = animated_input("1. Log in\n2. Create profile\n3. Return to menu\nChoose an action: ")
         if choice == "1":
             username = login_profile(profiles)
             if username:
@@ -90,13 +90,13 @@ def manage_profiles():
         elif choice == "3":
             return None
         else:
-            animated_text("Неверный выбор. Попробуйте снова.")
+            animated_text("Invalid choice. Please try again.")
 
 
 def profile_management():
     global current_user
     if current_user is None:
-        animated_text("Вы не вошли в профиль.")
+        animated_text("You are not logged in.")
         username = manage_profiles()
         if not username:
             return
@@ -104,29 +104,29 @@ def profile_management():
     profiles = load_profiles()
     while True:
         clear_console()
-        choice = animated_input("1. Изменить ник\n2. Изменить пароль\n3. Выйти из профиля\n4. Вернуться в меню\nВыберите действие: ")
+        choice = animated_input("1. Change username\n2. Change password\n3. Log out\n4. Return to menu\nChoose an action: ")
         if choice == "1":
-            new_username = animated_input("Введите новый ник: ")
+            new_username = animated_input("Enter new username: ")
             if new_username in profiles:
-                animated_text("Профиль с таким ником уже существует.")
+                animated_text("A profile with this username already exists.")
             else:
                 profiles[new_username] = profiles.pop(current_user)
                 save_profiles(profiles)
                 current_user = new_username
-                animated_text("Ник успешно изменен.")
+                animated_text("Username successfully changed.")
         elif choice == "2":
-            new_password = getpass.getpass("Введите новый пароль: ")
+            new_password = getpass.getpass("Enter new password: ")
             profiles[current_user] = new_password
             save_profiles(profiles)
-            animated_text("Пароль успешно изменен.")
+            animated_text("Password successfully changed.")
         elif choice == "3":
             current_user = None
-            animated_text("Вы вышли из профиля.")
+            animated_text("Logged out.")
             break
         elif choice == "4":
             break
         else:
-            animated_text("Неверный выбор. Попробуйте снова.")
+            animated_text("Invalid choice. Please try again.")
 
 
 def difficulty_to_text(difficulty):
@@ -159,23 +159,23 @@ def update_records(username, rows, cols, difficulty, elapsed_time):
 def display_records():
     global current_user
     if current_user is None:
-        animated_text("Вы не вошли в профиль.")
-        choice = animated_input("Чтобы вернутся в главное меню нажмите 1\nВаш выбор: ")
+        animated_text("You are not logged in.")
+        choice = animated_input("Press 1 to return to the main menu\nYour choice: ")
     while choice != "1":
-        animated_text("Неверный выбор. Попробуйте снова.")
-        choice = animated_input("Чтобы вернутся в главное меню нажмите 1\nВаш выбор: ")
+        animated_text("Invalid choice. Please try again.")
+        choice = animated_input("Press 1 to return to the main menu\nYour choice: ")
     if choice == "1":
         return
 
     records = load_records()
     user_records = records.get(current_user, {"wins": 0, "best_times": {}})
-    animated_text(f"Лучшие результаты для {current_user}:")
+    animated_text(f"Best records for {current_user}:")
     for key, time in user_records["best_times"].items():
-        animated_text(f"{key}: {time:.2f} секунд")
-    animated_text(f"Общее количество выигрышей: {user_records['wins']}\n")
-    choice = animated_input("Чтобы вернутся в главное меню нажмите 1\nВаш выбор: ")
+        animated_text(f"{key}: {time:.2f} seconds")
+    animated_text(f"Total wins: {user_records['wins']}\n")
+    choice = animated_input("Press 1 to return to the main menu\nYour choice: ")
     while choice != "1":
-        animated_text("Неверный выбор. Попробуйте снова.")
-        choice = animated_input("Чтобы вернутся в главное меню нажмите 1\nВаш выбор: ")
+        animated_text("Invalid choice. Please try again.")
+        choice = animated_input("Press 1 to return to the main menu\nYour choice: ")
     if choice == "1":
         return

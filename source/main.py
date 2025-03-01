@@ -5,6 +5,7 @@ from minesweeper import clear_console
 
 
 def start_game():
+    # Check if there is a current user, if not, manage profiles
     if profile_user_management.current_user is None:
         username = minesweeper.manage_profiles()
         if not username:
@@ -12,11 +13,14 @@ def start_game():
     else:
         username = profile_user_management.current_user
 
+    # Choose game difficulty and number of mines
     difficulty, amount_of_mines = minesweeper.choose_difficulty()
     if difficulty is None:
         return
 
     clear_console()
+
+    # Get the number of rows from the user
     while True:
         rows = minesweeper.animated_input("Enter the number of rows (5-99) (or 'quit' to exit to the menu): ")
         if rows.lower() == 'quit':
@@ -27,6 +31,7 @@ def start_game():
         else:
             minesweeper.animated_text("Invalid number of rows. Please enter a number between 5 and 99.\n")
 
+    # Get the number of columns from the user
     while True:
         cols = minesweeper.animated_input("Enter the number of columns (5-9) (or 'quit' to exit to the menu): ")
         if cols.lower() == 'quit':
@@ -38,9 +43,12 @@ def start_game():
             minesweeper.animated_text("Invalid number of columns. Please enter a number between 5 and 9.\n")
 
     clear_console()
+
+    # Generate the minesweeper board and print it
     board, rows, cols = minesweeper.generate_minesweeper_board(rows, cols)
     minesweeper.print_board(board)
 
+    # Get the starting row and column from the user
     start_row = minesweeper.animated_input("Enter the starting row (or 'quit' to exit to the menu): ")
     if start_row.lower() == 'quit':
         return
@@ -51,9 +59,11 @@ def start_game():
         return
     start_col = int(start_col)
     clear_console()
-    # Start the timer
+
+    # Start the game timer
     start_time = time.time()
 
+    # Open cells and place mines on the board
     minesweeper.open_cells(board, rows, cols, start_row, start_col, difficulty)
     board_with_mines = minesweeper.place_mines(board, rows, cols, amount_of_mines)
     board_with_counts = minesweeper.count_adjacent_mines(board_with_mines, rows, cols)
@@ -62,6 +72,7 @@ def start_game():
     minesweeper.animated_text("Board with hidden mines:\n")
     minesweeper.print_board(board_with_hidden_mines)
 
+    # Main game loop
     while True:
         row = minesweeper.animated_input("Enter the row (or 'quit' to exit to the menu): ")
         if row.lower() == 'quit':
@@ -74,6 +85,7 @@ def start_game():
         col = int(col)
         clear_console()
 
+        # Check if the user hit a mine
         if board_with_mines[row][col] == "*":
             minesweeper.animated_text("You lost!")
             minesweeper.animated_text("Board with mines:\n")
@@ -87,12 +99,15 @@ def start_game():
             else:
                 minesweeper.animated_text("Invalid choice. Please try again.\n")
 
+        # Open the selected cell
         if board_with_opened_neighbors[row][col] == "■":
             board_with_opened_neighbors[row][col] = " "
 
+        # Update the board with counts and open empty neighbors
         board_with_counts = minesweeper.count_adjacent_mines(board_with_opened_neighbors, rows, cols)
         board_with_opened_neighbors = minesweeper.open_empty_neighbors(board_with_counts, rows, cols)
 
+        # Check if the user has won
         if minesweeper.no_closed_cells(board_with_opened_neighbors, rows, cols):
             end_time = time.time()
             elapsed_time = end_time - start_time
@@ -109,12 +124,14 @@ def start_game():
             else:
                 minesweeper.animated_text("Invalid choice. Please try again.\n")
 
+        # Hide mines and print the board
         board_with_hidden_mines = minesweeper.hide_mines(board_with_opened_neighbors, rows, cols)
         minesweeper.animated_text("Board with hidden mines:\n")
         minesweeper.print_board(board_with_hidden_mines)
 
 
 def main():
+    # Main menu loop
     while True:
         minesweeper.display_menu()
         choice = minesweeper.animated_input("Choose an action: ")

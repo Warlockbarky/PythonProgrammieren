@@ -5,11 +5,13 @@ from .animated_input import animated_input
 from .animated_text import animated_text
 from .clear_console import clear_console
 
+# File paths for storing profiles and records
 PROFILES_FILE = 'profiles.json'
 RECORDS_FILE = 'records.json'
 current_user = None
 
 
+# Load profiles from the JSON file
 def load_profiles():
     if not os.path.exists(PROFILES_FILE):
         return {}
@@ -17,11 +19,13 @@ def load_profiles():
         return json.load(file)
 
 
+# Save profiles to the JSON file
 def save_profiles(profiles):
     with open(PROFILES_FILE, 'w') as file:
         json.dump(profiles, file)
 
 
+# Load records from the JSON file
 def load_records():
     if not os.path.exists(RECORDS_FILE):
         return {}
@@ -29,11 +33,13 @@ def load_records():
         return json.load(file)
 
 
+# Save records to the JSON file
 def save_records(records):
     with open(RECORDS_FILE, 'w') as file:
         json.dump(records, file)
 
 
+# Register a new user profile
 def register_profile(profiles):
     username = animated_input("Enter username: ")
     if username.lower() == 'quit':
@@ -51,6 +57,7 @@ def register_profile(profiles):
     return username
 
 
+# Log in an existing user profile
 def login_profile(profiles):
     clear_console()
     username = animated_input("Enter username: ")
@@ -71,6 +78,7 @@ def login_profile(profiles):
     return username
 
 
+# Manage user profiles (log in, create profile, return to menu)
 def manage_profiles():
     clear_console()
     global current_user
@@ -93,6 +101,7 @@ def manage_profiles():
             animated_text("Invalid choice. Please try again.")
 
 
+# Profile management (change username, change password, log out, return to menu)
 def profile_management():
     global current_user
     if current_user is None:
@@ -129,6 +138,7 @@ def profile_management():
             animated_text("Invalid choice. Please try again.")
 
 
+# Convert difficulty level to text
 def difficulty_to_text(difficulty):
     if difficulty == 30:
         return "easy"
@@ -142,6 +152,7 @@ def difficulty_to_text(difficulty):
         return "unknown"
 
 
+# Update user records with new game results
 def update_records(username, rows, cols, difficulty, elapsed_time):
     records = load_records()
     user_records = records.get(username, {"wins": 0, "best_times": {}})
@@ -156,16 +167,17 @@ def update_records(username, rows, cols, difficulty, elapsed_time):
     save_records(records)
 
 
+# Display the current user's records
 def display_records():
     global current_user
     if current_user is None:
         animated_text("You are not logged in.")
         choice = animated_input("Press 1 to return to the main menu\nYour choice: ")
-    while choice != "1":
-        animated_text("Invalid choice. Please try again.")
-        choice = animated_input("Press 1 to return to the main menu\nYour choice: ")
-    if choice == "1":
-        return
+        while choice != "1":
+            animated_text("Invalid choice. Please try again.")
+            choice = animated_input("Press 1 to return to the main menu\nYour choice: ")
+        if choice == "1":
+            return
 
     records = load_records()
     user_records = records.get(current_user, {"wins": 0, "best_times": {}})

@@ -1,6 +1,9 @@
 import json
 import os
 import getpass
+from .animated_input import animated_input
+from .animated_text import animated_text
+from .clear_console import clear_console
 
 PROFILES_FILE = 'profiles.json'
 RECORDS_FILE = 'records.json'
@@ -32,11 +35,11 @@ def save_records(records):
 
 
 def register_profile(profiles):
-    username = input("Введите ник: ")
+    username = animated_input("Введите ник: ")
     if username.lower() == 'quit':
         return None
     if username in profiles:
-        print("Профиль с таким ником уже существует.")
+        animated_text("Профиль с таким ником уже существует.")
         return None
 
     password = getpass.getpass("Введите пароль: ")
@@ -44,34 +47,36 @@ def register_profile(profiles):
         return None
     profiles[username] = password
     save_profiles(profiles)
-    print("Профиль успешно создан.")
+    animated_text("Профиль успешно создан.")
     return username
 
 
 def login_profile(profiles):
-    username = input("Введите ник: ")
+    clear_console()
+    username = animated_input("Введите ник: ")
     if username.lower() == 'quit':
         return None
     if username not in profiles:
-        print("Профиль с таким ником не найден.")
+        animated_text("Профиль с таким ником не найден.")
         return None
 
     password = getpass.getpass("Введите пароль: ")
     if password.lower() == 'quit':
         return None
     if profiles[username] != password:
-        print("Неверный пароль.")
+        animated_text("Неверный пароль.")
         return None
 
-    print("Вы успешно вошли в профиль.")
+    animated_text("Вы успешно вошли в профиль.")
     return username
 
 
 def manage_profiles():
+    clear_console()
     global current_user
     profiles = load_profiles()
     while True:
-        choice = input("1. Войти в профиль\n2. Создать профиль\n3. Вернуться в меню\nВыберите действие: ")
+        choice = animated_input("1. Войти в профиль\n2. Создать профиль\n3. Вернуться в меню\nВыберите действие: ")
         if choice == "1":
             username = login_profile(profiles)
             if username:
@@ -85,42 +90,43 @@ def manage_profiles():
         elif choice == "3":
             return None
         else:
-            print("Неверный выбор. Попробуйте снова.")
+            animated_text("Неверный выбор. Попробуйте снова.")
 
 
 def profile_management():
     global current_user
     if current_user is None:
-        print("Вы не вошли в профиль.")
+        animated_text("Вы не вошли в профиль.")
         username = manage_profiles()
         if not username:
             return
 
     profiles = load_profiles()
     while True:
-        choice = input("1. Изменить ник\n2. Изменить пароль\n3. Выйти из профиля\n4. Вернуться в меню\nВыберите действие: ")
+        clear_console()
+        choice = animated_input("1. Изменить ник\n2. Изменить пароль\n3. Выйти из профиля\n4. Вернуться в меню\nВыберите действие: ")
         if choice == "1":
-            new_username = input("Введите новый ник: ")
+            new_username = animated_input("Введите новый ник: ")
             if new_username in profiles:
-                print("Профиль с таким ником уже существует.")
+                animated_text("Профиль с таким ником уже существует.")
             else:
                 profiles[new_username] = profiles.pop(current_user)
                 save_profiles(profiles)
                 current_user = new_username
-                print("Ник успешно изменен.")
+                animated_text("Ник успешно изменен.")
         elif choice == "2":
             new_password = getpass.getpass("Введите новый пароль: ")
             profiles[current_user] = new_password
             save_profiles(profiles)
-            print("Пароль успешно изменен.")
+            animated_text("Пароль успешно изменен.")
         elif choice == "3":
             current_user = None
-            print("Вы вышли из профиля.")
+            animated_text("Вы вышли из профиля.")
             break
         elif choice == "4":
             break
         else:
-            print("Неверный выбор. Попробуйте снова.")
+            animated_text("Неверный выбор. Попробуйте снова.")
 
 
 def difficulty_to_text(difficulty):
@@ -142,7 +148,7 @@ def update_records(username, rows, cols, difficulty, elapsed_time):
     user_records["wins"] += 1
 
     difficulty_text = difficulty_to_text(difficulty)
-    key = f"{rows}x{cols}_{difficulty_text}"
+    key = f"{rows}x{cols} {difficulty_text}"
     if key not in user_records["best_times"] or elapsed_time < user_records["best_times"][key]:
         user_records["best_times"][key] = elapsed_time
 
@@ -153,12 +159,23 @@ def update_records(username, rows, cols, difficulty, elapsed_time):
 def display_records():
     global current_user
     if current_user is None:
-        print("Вы не вошли в профиль.")
+        animated_text("Вы не вошли в профиль.")
+        choice = animated_input("Чтобы вернутся в главное меню нажмите 1\nВаш выбор: ")
+    while choice != "1":
+        animated_text("Неверный выбор. Попробуйте снова.")
+        choice = animated_input("Чтобы вернутся в главное меню нажмите 1\nВаш выбор: ")
+    if choice == "1":
         return
 
     records = load_records()
     user_records = records.get(current_user, {"wins": 0, "best_times": {}})
-    print(f"Лучшие результаты для {current_user}:")
+    animated_text(f"Лучшие результаты для {current_user}:")
     for key, time in user_records["best_times"].items():
-        print(f"{key}: {time:.2f} секунд")
-    print(f"Общее количество выигрышей: {user_records['wins']}")
+        animated_text(f"{key}: {time:.2f} секунд")
+    animated_text(f"Общее количество выигрышей: {user_records['wins']}\n")
+    choice = animated_input("Чтобы вернутся в главное меню нажмите 1\nВаш выбор: ")
+    while choice != "1":
+        animated_text("Неверный выбор. Попробуйте снова.")
+        choice = animated_input("Чтобы вернутся в главное меню нажмите 1\nВаш выбор: ")
+    if choice == "1":
+        return

@@ -1,12 +1,18 @@
+from .animated_input import animated_input
+from .animated_text import animated_text
+from .clear_console import clear_console
+
+
 def choose_difficulty():
-    print("Выберите уровень сложности:")
-    print("1. Легкий")
-    print("2. Средний")
-    print("3. Тяжелый")
-    print("4. Невозможный")
+    clear_console()
+    animated_text("Выберите уровень сложности:")
+    animated_text("1. Легкий")
+    animated_text("2. Средний")
+    animated_text("3. Тяжелый")
+    animated_text("4. Невозможный")
 
     while True:
-        choice = input("Введите номер уровня сложности (или 'quit' для выхода в меню): ")
+        choice = animated_input("Введите номер уровня сложности (или 'quit' для выхода в меню): ")
         if choice.lower() == 'quit':
             return None, None
         if choice == "1":
@@ -18,4 +24,4 @@ def choose_difficulty():
         elif choice == "4":
             return 10, 3
         else:
-            print("Неверный выбор. Попробуйте снова.")
+            animated_text("Неверный выбор. Попробуйте снова.")

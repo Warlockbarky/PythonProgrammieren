@@ -8,7 +8,6 @@ from .hide_mines import hide_mines
 from .print_board import print_board
 from .display_menu import display_menu
 from .choose_difficulty import choose_difficulty
-from .profile_user_management import *
 from .animated_text import animated_text
 from .animated_input import animated_input
 from .clear_console import clear_console

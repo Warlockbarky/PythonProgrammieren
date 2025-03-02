@@ -1,18 +1,9 @@
 import time
 import minesweeper
-from minesweeper import profile_user_management
 from minesweeper import clear_console
 
 
 def start_game():
-    # Check if there is a current user, if not, manage profiles
-    if profile_user_management.current_user is None:
-        username = minesweeper.manage_profiles()
-        if not username:
-            return
-    else:
-        username = profile_user_management.current_user
-
     # Choose game difficulty and number of mines
     difficulty, amount_of_mines = minesweeper.choose_difficulty()
     if difficulty is None:
@@ -114,7 +105,6 @@ def start_game():
             minesweeper.animated_text(f"You won! Game time: {elapsed_time:.2f} seconds")
             minesweeper.animated_text("Board with mines:\n")
             minesweeper.print_board(board_with_opened_neighbors)
-            minesweeper.update_records(username, rows, cols, difficulty, elapsed_time)
             choice = minesweeper.animated_input("To play again press 1\nTo return to the main menu press 2\nYour choice: ")
             if choice == "1":
                 start_game()
@@ -139,10 +129,6 @@ def main():
         if choice == "1":
             start_game()
         elif choice == "2":
-            minesweeper.profile_management()
-        elif choice == "3":
-            minesweeper.display_records()
-        elif choice == "4":
             minesweeper.clear_console()
             minesweeper.animated_text("Exiting the game. Goodbye!")
             break

@@ -1,31 +1,37 @@
+"""Module to open cells at the start of a game."""
+
 import random
 
 
 def open_cells(board, rows, cols, start_row: int, start_col: int, difficulty: int):
-    # Calculate the total number of cells on the board
+    """
+    Open cells on the board starting from a given cell
+    based on the difficulty level.
+
+    Args:
+        board (list): The game board represented as a 2D list.
+        rows (int): The number of rows in the board.
+        cols (int): The number of columns in the board.
+        start_row (int): The starting row to begin opening cells.
+        start_col (int): The starting column to begin opening cells.
+        difficulty (int): The difficulty level as a percentage of cells to open
+
+    Returns:
+        None
+    """
     total_cells = rows * cols
-    # Determine the target number of cells to open based on difficulty
     target_open_cells = total_cells * difficulty // 100
-    # Initialize a set to keep track of opened cells
     opened = set()
-    # Initialize a queue with the starting cell
     queue = [(start_row, start_col)]
 
     while queue and len(opened) < target_open_cells:
-        # Get the next cell from the queue
         r, c = queue.pop(0)
-        # Skip if the cell is already opened or is on the border
         if (r, c) in opened or r == 0 or c == 0:
             continue
-        # Open the cell
         board[r][c] = " "
-        # Add the cell to the set of opened cells
         opened.add((r, c))
-        # Get the neighboring cells
         neighbors = [(r-1, c), (r+1, c), (r, c-1), (r, c+1)]
-        # Shuffle the neighbors to randomize the opening process
         random.shuffle(neighbors)
-        # Add valid neighbors to the queue
         for nr, nc in neighbors:
             if 0 < nr <= rows and 0 < nc <= cols and (nr, nc) not in opened:
                 queue.append((nr, nc))

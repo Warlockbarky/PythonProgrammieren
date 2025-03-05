@@ -1,7 +1,13 @@
+"""Module to print the Minesweeper board with colored cells."""
+
 from colorama import Fore, Style
 
 
 def print_board(board):
+    """
+    Args:
+        board (list): The game board represented as a 2D list.
+    """
     # Define a color map for different cell values
     color_map = {
         '1': Fore.BLUE,
@@ -17,7 +23,8 @@ def print_board(board):
     for i, row in enumerate(board):
         colored_row = []
         for j, cell in enumerate(row):
-            # Apply color to the cell if it is in the color map and not in the header row/column
+            # Apply color to the cell if it is in the color map
+            # and not in the header row/column
             if i > 0 and j > 0 and cell in color_map:
                 colored_row.append(color_map[cell] + cell + Style.RESET_ALL)
             else:

@@ -1,8 +1,17 @@
-from .animated_text import animated_text  # Import the animated_text function from the animated_text module
+"""Module providing an animated input function."""
+
+from .animated_text import animated_text
 
 
 def animated_input(prompt, delay=0.01):
-    # Display the prompt text with an animation effect
+    """Display the prompt text with an animation effect and return user input.
+
+    Args:
+        prompt (str): The text to display before user input.
+        delay (float, optional): The delay between characters. Default is 0.01.
+
+    Returns:
+        str: The user's input.
+    """
     animated_text(prompt, delay)
-    # Return the user's input after the animated prompt
     return input()

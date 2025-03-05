@@ -4,7 +4,7 @@ from .clear_console import clear_console
 from .animated_text import animated_text
 
 
-def display_menu():
+def display_menu() -> None:
     """
     Clear the console and display the main menu with animated text.
     """

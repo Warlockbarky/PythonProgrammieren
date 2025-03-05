@@ -5,7 +5,7 @@ from .animated_text import animated_text
 from .clear_console import clear_console
 
 
-def choose_difficulty():
+def choose_difficulty() -> tuple[int | None, int | None]:
     """
     Clear the console and display the difficulty level options
     with animated text. Get the user's choice with an animated input prompt

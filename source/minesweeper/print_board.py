@@ -3,7 +3,7 @@
 from colorama import Fore, Style
 
 
-def print_board(board):
+def print_board(board: list[list[str]]) -> None:
     """
     Args:
         board (list): The game board represented as a 2D list.

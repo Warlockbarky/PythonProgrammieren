@@ -3,7 +3,7 @@
 import copy
 
 
-def hide_mines(board, rows, cols):
+def hide_mines(board: list[list[str]], rows: int, cols: int) -> list[list[str]]:
     """
     Hide the mines on the board by replacing them with a placeholder.
 

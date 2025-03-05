@@ -3,7 +3,7 @@
 import random
 
 
-def open_cells(board, rows, cols, start_row: int, start_col: int, difficulty: int):
+def open_cells(board: list[list[str]], rows: int, cols: int, start_row: int, start_col: int, difficulty: int) -> None:
     """
     Open cells on the board starting from a given cell
     based on the difficulty level.
@@ -21,7 +21,7 @@ def open_cells(board, rows, cols, start_row: int, start_col: int, difficulty: in
     """
     total_cells = rows * cols
     target_open_cells = total_cells * difficulty // 100
-    opened = set()
+    opened: set[tuple[int, int]] = set()
     queue = [(start_row, start_col)]
 
     while queue and len(opened) < target_open_cells:

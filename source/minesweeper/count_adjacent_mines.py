@@ -3,7 +3,7 @@
 import copy
 
 
-def count_adjacent_mines(board, rows, cols):
+def count_adjacent_mines(board: list[list[str]], rows: int, cols: int) -> list[list[str]]:
     """
     Count the number of adjacent mines for each cell in the board.
 

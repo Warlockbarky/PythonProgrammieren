@@ -1,7 +1,7 @@
 """Module to check if there are no closed cells on the board."""
 
 
-def no_closed_cells(board, rows, cols):
+def no_closed_cells(board: list[list[str]], rows: int, cols: int) -> bool:
     """
     Args:
         board (list): The game board represented as a 2D list.

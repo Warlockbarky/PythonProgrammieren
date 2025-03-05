@@ -1,7 +1,7 @@
 """Module to generate board."""
 
 
-def generate_minesweeper_board(rows: int, cols: int):
+def generate_minesweeper_board(rows: int, cols: int) -> tuple[list[list[str]], int, int]:
     """
     Generate a Minesweeper board with row and column labels.
 

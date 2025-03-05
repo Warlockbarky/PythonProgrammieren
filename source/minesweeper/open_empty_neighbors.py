@@ -1,10 +1,10 @@
 """Module to open the neighboring cells of empty cells on the board."""
 
 import copy
-from . import count_adjacent_mines
+from .count_adjacent_mines import count_adjacent_mines
 
 
-def open_empty_neighbors(board, rows, cols):
+def open_empty_neighbors(board: list[list[str]], rows: int, cols: int) -> list[list[str]]:
     """
     Args:
         board (list): The game board represented as a 2D list.
@@ -18,10 +18,10 @@ def open_empty_neighbors(board, rows, cols):
     directions = [(-1, 0), (1, 0), (0, -1), (0, 1),
                   (-1, -1), (-1, 1), (1, -1), (1, 1)]
 
-    def is_empty(r, c):
+    def is_empty(r: int, c: int) -> bool:
         return board[r][c] == " "
 
-    def open_neighbors(board_copy, r, c):
+    def open_neighbors(board_copy: list[list[str]], r: int, c: int) -> None:
         for dr, dc in directions:
             nr, nc = r + dr, c + dc
             if 1 <= nr <= rows and 1 <= nc <= cols and board_copy[nr][nc] == "■":

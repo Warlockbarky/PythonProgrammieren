@@ -139,6 +139,7 @@ def start_game():
         minesweeper.animated_text("Board with hidden mines:\n")
         minesweeper.print_board(board_with_hidden_mines)
 
+
 def main():
     """
     Main function to display the menu and start the game.

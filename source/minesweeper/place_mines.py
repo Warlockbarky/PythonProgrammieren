@@ -1,11 +1,10 @@
 """Module to place mines on the board based on the difficulty level."""
 
-
 import random
 import copy
 
 
-def place_mines(board, rows, cols, difficulty: int):
+def place_mines(board: list[list[str]], rows: int, cols: int, difficulty: int) -> list[list[str]]:
     """
     Args:
         board (list): The game board represented as a 2D list.

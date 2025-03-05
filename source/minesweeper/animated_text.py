@@ -4,7 +4,7 @@ import sys
 import time
 
 
-def animated_text(text, delay=0.01):
+def animated_text(text: str, delay: float = 0.01) -> None:
     """
     Display text with an animated effect.
 

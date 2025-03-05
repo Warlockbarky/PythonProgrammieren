@@ -3,7 +3,7 @@
 from .animated_text import animated_text
 
 
-def animated_input(prompt, delay=0.01):
+def animated_input(prompt: str, delay: float = 0.01) -> str:
     """Display the prompt text with an animation effect and return user input.
 
     Args:

@@ -47,44 +47,78 @@ def start_game():
     minesweeper.print_board(board)
 
     # Get the starting row and column from the user
-    start_row = minesweeper.animated_input("Enter the starting row"
-                                           "(or 'quit' to exit to the menu): ")
-    if start_row.lower() == 'quit':
-        return
-    start_row = int(start_row)
+    while True:
+        start_row = minesweeper.animated_input(f"Enter the starting row (1-{rows})"
+                                            " (or 'quit' to exit to the menu): ")
+        if start_row.lower() == 'quit':
+            return
+        start_row = int(start_row)
+        if 1 <= start_row <= rows:
+            break
+        minesweeper.animated_text("Invalid row. Please enter a "
+                                  f"number between 1 and {rows}.\n")
 
-    start_col = minesweeper.animated_input("Enter the starting column"
-                                           "(or 'quit' to exit to the menu): ")
-    if start_col.lower() == 'quit':
-        return
-    start_col = int(start_col)
+    while True:
+        start_col = minesweeper.animated_input(f"Enter the starting column (1-{cols})"
+                                            " (or 'quit' to exit to the menu): ")
+        if start_col.lower() == 'quit':
+            return
+        start_col = int(start_col)
+        if 1 <= start_col <= cols:
+            break
+        minesweeper.animated_text(f"Invalid column. Please enter a number between 1 and {cols}.\n")
+
     clear_console()
 
     # Start the game timer
     start_time = time.time()
 
-    # Open cells and place mines on the board
+    # Open cells, place and count mines on the board
     minesweeper.open_cells(board, rows, cols, start_row, start_col, difficulty)
     board_with_mines = minesweeper.place_mines(board, rows, cols, amount_of_mines)
     board_with_counts = minesweeper.count_adjacent_mines(board_with_mines, rows, cols)
     board_with_opened_neighbors = minesweeper.open_empty_neighbors(board_with_counts, rows, cols)
     board_with_hidden_mines = minesweeper.hide_mines(board_with_opened_neighbors, rows, cols)
-    minesweeper.animated_text("Board with hidden mines:\n")
     minesweeper.print_board(board_with_hidden_mines)
 
     # Main game loop
     while True:
-        row = minesweeper.animated_input("Enter the row"
-                                         "(or 'quit' to exit to the menu): ")
-        if row.lower() == 'quit':
+        while True:
+            row = minesweeper.animated_input(f"Enter the row (1-{rows}) ("
+                                            "or 'quit' to exit to the menu): ")
+            if row.lower() == 'quit':
+                break
+            try:
+                row = int(row)
+                if 1 <= row <= rows:
+                    break
+                else:
+                    minesweeper.animated_text("Invalid row. Please enter a "
+                                              f"number between 1 and {rows}\n")
+            except ValueError:
+                minesweeper.animated_text("Invalid input. Please enter "
+                                          "a valid number.\n")
+        if isinstance(row, str) and row.lower() == 'quit':
             break
-        row = int(row)
 
-        col = minesweeper.animated_input("Enter the column"
-                                         "(or 'quit' to exit to the menu): ")
-        if col.lower() == 'quit':
+        while True:
+            col = minesweeper.animated_input(f"Enter the column (1-{cols}) ("
+                                            "or 'quit' to exit to the menu): ")
+            if col.lower() == 'quit':
+                break
+            try:
+                col = int(col)
+                if 1 <= col <= cols:
+                    break
+                else:
+                    minesweeper.animated_text(f"Invalid column. Please enter a"
+                                              " number between 1 and {cols}\n")
+            except ValueError:
+                minesweeper.animated_text("Invalid input. Please enter a "
+                                          "valid number.\n")
+        if isinstance(col, str) and col.lower() == 'quit':
             break
-        col = int(col)
+
         clear_console()
 
         # Check if the user hit a mine
